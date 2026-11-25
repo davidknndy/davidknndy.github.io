@@ -1,19 +1,18 @@
-David Kennedy's Portfolio
+# davidknndy.github.io
 
-My personal engineering portfolio and interactive project workbench for (`davidknndy`), showcasing 13 mobile, web, automation, and support-engineering tools.
+My personal engineering portfolio and interactive project showcase, featuring 13 mobile, desktop automation, and support engineering tools I built using Python, Node.js, Flutter, and Kotlin.
 
-## Structure
+## What is inside
 
-- `index.html` — Semantic static entry page
-- `css/styles.css` — Ink Dark design system on a 4px spacing grid
-- `js/i18n.js` — Bilingual (`EN` / `PT`) copy dictionary
-- `js/data.js` — Sanitized project metadata and synthetic demo datasets
-- `js/demos.js` — Client-side interactive simulators for all 13 projects
-- `js/app.js` — Workbench navigation, filtering, keyboard controls, and URL hash state
-- `.nojekyll` — Direct static hosting on GitHub Pages
+- **Interactive Workbench** — Architecture notes and live client-side simulators for each project (`FlyLow`, `Radar Monitor`, `LeBet`, `Rota Fácil`, `Greeter`, `HitTheClock`, `JiraMonitor`, `BlocklyMaster`, `ChatJira`, `CSAT`, `BOT KB + GPT`, `AlertBot`, and `TestPlan`).
+- **Project Archive** — Filterable overview of all 13 projects, runtimes, and entry modules.
+- **Bilingual & Themeable** — Instant `EN` / `PT` language switch and Dark / Light theme toggle.
 
-## Design & Security
+## Project layout
 
-- Zero build step required; opens directly or via GitHub Pages.
-- All internal work tools use sanitized synthetic payloads with zero API keys, corporate URLs, or proprietary datasets.
-- Built following the `unslop` craft framework (CC BY 4.0 credit to [@heydamir](https://x.com/heydamir)).
+- `index.html` — Main entry page
+- `css/styles.css` — Dark and Light design tokens and layout styles
+- `js/i18n.js` — English and Portuguese copy
+- `js/data.js` — Project descriptions and demo datasets
+- `js/demos.js` — Interactive browser simulators for all 13 projects
+- `js/app.js` — Navigation, filtering, theme/language state, and keyboard controls

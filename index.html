@@ -129,7 +129,7 @@
         <div class="section-header" data-reveal>
           <div>
             <h2 class="section-title" data-i18n="workbench.title">Interactive project workbench</h2>
-            <p class="section-desc" data-i18n="workbench.desc">Select any project in the index to inspect its architecture and run a sanitized browser simulator. Keyboard arrows navigate rows.</p>
+            <p class="section-desc" data-i18n="workbench.desc">Select any project in the index to inspect its architecture and run a live browser simulator. Keyboard arrows navigate rows.</p>
           </div>
           <div class="filter-bar" role="tablist" aria-label="Filter projects by domain">
             <button type="button" class="filter-btn active" data-filter="all" data-i18n="filter.all">All (13)</button>
@@ -160,7 +160,7 @@
                     <span class="telemetry-dot" aria-hidden="true"></span>
                     <span class="demo-bar-title" data-i18n="workbench.simulatorLabel">Live browser simulator</span>
                   </div>
-                  <span class="mono-meta" id="demoDataNote" data-i18n="workbench.sanitizedNote">Sanitized local dataset</span>
+                  <span class="mono-meta" id="demoDataNote" data-i18n="workbench.dataNote">Interactive sample data</span>
                 </div>
                 <div class="demo-mount" id="demoMount"></div>
               </div>
@@ -202,15 +202,18 @@
     <section class="section section-about" id="about">
       <div class="container about-grid">
         <div class="about-main" data-reveal>
-          <h2 class="section-title" data-i18n="about.title">Engineering profile</h2>
+          <h2 class="section-title" data-i18n="about.title">Profile</h2>
           <p class="about-copy" data-i18n="about.p1">
-            I am David Kennedy, a support engineer and builder based in Belo Horizonte, Brazil. Most of these tools started from concrete friction: automating repetitive Jira triage, launching multi-stop Waze and Google Maps routes with one tap, decoding low-code XML payloads, or monitoring live flight and odds discrepancies.
+            I hold a degree in Analysis and Systems Development and a postgraduate degree in Data Science and Big Data Analytics. With over 20 years of experience as an Applications Support Analyst, I focus on diagnosing and resolving complex software and hardware issues for local and international clients.
           </p>
           <p class="about-copy" data-i18n="about.p2">
-            Internal work tools shown here have been stripped of corporate endpoints, tokens, and proprietary datasets so every simulator runs safely in the browser with synthetic payloads.
+            My background spans advanced troubleshooting, system optimization, SQL/Oracle databases, Java, basic ABAP, and web development—combined with hands-on automation and mobile tooling built in Python, Node.js, Flutter, and Kotlin.
           </p>
           <div class="about-links">
-            <a href="https://github.com/davidknndy" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+            <a href="https://www.linkedin.com/in/david-kennedy-132909a0/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              <span data-i18n="about.linkedinCta">Connect on LinkedIn</span>
+            </a>
+            <a href="https://github.com/davidknndy" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
               <span data-i18n="about.githubCta">View GitHub profile</span>
             </a>
             <a href="mailto:davidkndy@protonmail.com" class="btn btn-secondary">davidkndy@protonmail.com</a>
@@ -228,12 +231,12 @@
             </div>
           </div>
           <div class="stack-card">
-            <div class="stack-card-title" data-i18n="about.stackWeb">Web & Backend</div>
+            <div class="stack-card-title" data-i18n="about.stackWeb">Web, Data & Backend</div>
             <div class="stack-items">
               <span class="stack-item">Node.js · Express · SSE</span>
               <span class="stack-item">Python · Flask · Playwright</span>
-              <span class="stack-item">PostgreSQL · SQLite</span>
-              <span class="stack-item">HTML5 · CSS3 · Vanilla JS</span>
+              <span class="stack-item">SQL · Oracle · PostgreSQL</span>
+              <span class="stack-item">Java · Basic ABAP · Web</span>
             </div>
           </div>
           <div class="stack-card">
@@ -254,12 +257,14 @@
     <div class="container footer-inner">
       <div class="footer-left">
         <span class="brand-name">davidknndy</span>
-        <span class="mono-meta" data-i18n="footer.builtFrom">Belo Horizonte, BR · Static build for davidknndy.github.io</span>
+        <span class="mono-meta" data-i18n="footer.location">Belo Horizonte, BR</span>
       </div>
       <div class="footer-right">
-        <a href="https://github.com/davidknndy/davidknndy.github.io" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="footer.repo">Source repository</a>
+        <a href="https://www.linkedin.com/in/david-kennedy-132909a0/" target="_blank" rel="noopener noreferrer" class="footer-link">LinkedIn</a>
         <span class="footer-sep" aria-hidden="true">·</span>
-        <a href="https://heydamir.design/unslop" target="_blank" rel="noopener noreferrer" class="footer-link">Crafted with unslop (CC BY 4.0)</a>
+        <a href="https://github.com/davidknndy" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="mailto:davidkndy@protonmail.com" class="footer-link">davidkndy@protonmail.com</a>
       </div>
     </div>
   </footer>
