@@ -39,10 +39,13 @@
     document.documentElement.lang = state.lang;
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const key = el.getAttribute("data-i18n");
-      el.textContent = t(key);
+      const val = (i18n[state.lang] && i18n[state.lang][key]) || i18n.en[key];
+      if (val) el.textContent = val;
     });
     document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-      el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")));
+      const key = el.getAttribute("data-i18n-placeholder");
+      const val = (i18n[state.lang] && i18n[state.lang][key]) || i18n.en[key];
+      if (val) el.setAttribute("placeholder", val);
     });
     document.querySelectorAll(".lang-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.lang === state.lang);
