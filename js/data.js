@@ -5,17 +5,18 @@ window.PORTFOLIO_PROJECTS = [
     name: "FlyLow",
     group: "mobile-web",
     kind: "Web · Node + Python",
+    liveUrl: "https://flylow.onrender.com/",
     tags: ["Node.js", "Express", "fast-flights", "Protobuf"],
     modules: ["server.js", "flightsService.js", "scripts/live_flights.py", "public/js/app.js"],
     en: {
       subtitle: "Flight Deal Finder & Sao Paulo International Radar",
-      summary: "Combines a Node.js/Express API with a Python fast-flights Google Flights scraper (30-min cache) to track domestic deals from Belo Horizonte (CNF/PLU) and international fares departing Sao Paulo under a configurable price cap.",
+      summary: "Live at flylow.onrender.com. Combines a Node.js/Express API with a Python fast-flights Google Flights scraper (30-min cache) to track domestic deals from Belo Horizonte (CNF/PLU) and international fares departing Sao Paulo under a configurable price cap.",
       problem: "Airline portals bury multi-passenger tax math and force repetitive origin searches when hunting low-cost South American fares.",
       pipeline: "Origin + SP Price Cap -> Python fast-flights / route cache -> Adult & Child tax math -> Deep links (Google Flights, Skyscanner, Kayak)"
     },
     pt: {
       subtitle: "Buscador de Passagens Baratas e Radar SP Exterior",
-      summary: "Combina uma API Node.js/Express com scraper Python fast-flights (cache de 30 min) para rastrear tarifas saindo de Belo Horizonte (CNF/PLU) e voos internacionais partindo de São Paulo abaixo de um teto configurável.",
+      summary: "Disponível em flylow.onrender.com. Combina uma API Node.js/Express com scraper Python fast-flights (cache de 30 min) para rastrear tarifas saindo de Belo Horizonte (CNF/PLU) e voos internacionais partindo de São Paulo abaixo de um teto configurável.",
       problem: "Portais aéreos escondem taxas por passageiro e exigem buscas manuais repetitivas para encontrar tarifas promocionais na América do Sul.",
       pipeline: "Origem + Teto SP -> Python fast-flights / cache -> Cálculo adulto e criança -> Links diretos (Google Flights, Skyscanner, Kayak)"
     }
@@ -51,36 +52,36 @@ window.PORTFOLIO_PROJECTS = [
     modules: ["calculator.py", "scraper.py", "analyzer.py", "lebet_app/lib/screens/"],
     en: {
       subtitle: "Quantitative +EV Odds Detector & 1/4 Kelly Companion",
-      summary: "Strips vig from sharp benchmark lines (Pinnacle) to identify positive Expected Value (+EV) discrepancies on retail sportsbooks, sizes stakes via 1/4 Kelly, enriches context with Gemini 3.8 Flash, and delivers alerts to Telegram and a Flutter Android APK.",
+      summary: "Strips bookmaker margin from global reference lines to identify positive Expected Value (+EV) discrepancies on retail sportsbooks, sizes stakes via 1/4 Kelly, evaluates match context with Gemini 3.8 Flash, and delivers alerts to Telegram and a Flutter Android app.",
       problem: "Manual line shopping across sportsbooks misses short-lived pricing inefficiencies and lacks disciplined bankroll sizing.",
-      pipeline: "The Odds API -> Proportional devig -> +EV & 1/4 Kelly math -> Gemini 3.8 Flash injury check -> SQLite + Telegram + Flutter APK"
+      pipeline: "The Odds API -> Margin removal -> +EV & 1/4 Kelly math -> Gemini 3.8 Flash match context -> SQLite + Telegram + Flutter app"
     },
     pt: {
-      subtitle: "Detector Quantitativo de Valor (+EV) e App Flutter",
-      summary: "Remove a margem de linhas sharp (Pinnacle) para detectar apostas com Valor Esperado Positivo (+EV) em casas recreativas, dimensiona banca com 1/4 Kelly, analisa lesões via Gemini 3.8 Flash e envia alertas no Telegram e em APK Flutter.",
-      problem: "Comparar cotações manualmente perde janelas curtas de ineficiência e leva a gestão de banca inconsistente.",
-      pipeline: "The Odds API -> Devig proporcional -> Cálculo +EV e 1/4 Kelly -> Contexto Gemini 3.8 Flash -> SQLite + Telegram + APK"
+      subtitle: "Detector de Apostas de Valor (+EV) e App em Flutter",
+      summary: "Compara as cotações de casas de referência global com casas tradicionais para encontrar apostas com vantagem matemática (+EV), calcula a fração ideal da banca pelo critério 1/4 Kelly, avalia o contexto da partida com o Gemini 3.8 Flash e envia alertas no Telegram e em App desenvolvido em Flutter.",
+      problem: "Comparar cotações manualmente entre várias casas faz perder boas oportunidades e dificulta uma gestão de banca disciplinada.",
+      pipeline: "The Odds API -> Remoção da margem -> Cálculo +EV e 1/4 Kelly -> Contexto da partida com Gemini 3.8 Flash -> SQLite + Telegram + App Flutter"
     }
   },
   {
-    id: "aircatch",
+    id: "rotafacil",
     index: "04",
-    name: "AirCatch (Mach)",
+    name: "Rota Fácil",
     group: "mobile-web",
     kind: "Mobile · Android Kotlin",
-    tags: ["Kotlin", "AccessibilityService", "ML Kit OCR", "WindowManager"],
-    modules: ["FocoAccessibilityService.kt", "OverlayService.kt", "MainActivity.kt", "BootReceiver.kt"],
+    tags: ["Kotlin", "Jetpack Compose", "AccessibilityService", "Waze & Maps"],
+    modules: ["UberAccessibilityService.kt", "FloatingWidgetService.kt", "NavigationHelper.kt", "RideRepository.kt"],
     en: {
-      subtitle: "Hands-Free Airport Ride Keyword Detector & Auto-Accept",
-      summary: "Native Android AccessibilityService and draggable WindowManager bubble monitoring Uber Driver offers in real time. Combines accessibility node inspection with ML Kit OCR fallback to detect Confins (CNF) airport keywords and dispatch accept gestures with a 6s cooldown.",
-      problem: "Evaluating airport destinations while driving creates distraction and misses competitive exclusive or radar ride offers.",
-      pipeline: "Accessibility window event -> Node text + ML Kit OCR -> Airport keyword match -> dispatchGesture + 6s cooldown"
+      subtitle: "Floating Ride Address Capture & 1-Tap Waze / Google Maps Routing",
+      summary: "Native Android Jetpack Compose app paired with an AccessibilityService and snap-to-edge floating overlay for Uber Driver and 99. Reads pickup and drop-off addresses from the screen, normalizes street text, and launches either single-stop Waze navigation or a multi-stop Google Maps waypoint route in one tap.",
+      problem: "Drivers waste seconds copying and typing pickup and destination addresses into external GPS apps between back-to-back trips.",
+      pipeline: "Accessibility screen read -> Address normalization -> StateFlow floating card -> Waze URI / Google Maps multi-stop Intent"
     },
     pt: {
-      subtitle: "Detector de Corridas de Aeroporto via Acessibilidade e OCR",
-      summary: "Serviço nativo Android AccessibilityService com bolha flutuante que monitora ofertas no Uber Driver em tempo real. Combina leitura de nós da tela com fallback ML Kit OCR para detectar palavras-chave de Confins (CNF) e acionar aceite com cooldown de 6s.",
-      problem: "Ler destinos de aeroporto enquanto dirige gera distração e faz perder corridas disputadas.",
-      pipeline: "Evento de janela -> Árvore de nós + ML Kit OCR -> Match de aeroporto -> dispatchGesture + cooldown de 6s"
+      subtitle: "Captura Flutuante de Endereços e Rotas 1-Toque no Waze / Maps",
+      summary: "App nativo Android em Jetpack Compose com AccessibilityService e bolha flutuante acoplável para Uber Driver e 99. Lê origem e destino direto da tela, normaliza os endereços e abre com um toque o Waze ou uma rota com parada intermediária no Google Maps.",
+      problem: "Motoristas perdem tempo copiando e digitando endereços de embarque e destino em navegadores externos entre corridas.",
+      pipeline: "Leitura via Acessibilidade -> Normalização de texto -> Card flutuante StateFlow -> URI Waze / Intent Google Maps com parada"
     }
   },
   {
@@ -93,13 +94,13 @@ window.PORTFOLIO_PROJECTS = [
     modules: ["greeter.pyw", "sentencereplacer.py"],
     en: {
       subtitle: "Global Clipboard Hotkeys for Bilingual Replies & Grammar Polish",
-      summary: "Headless Windows systray assistant binding two system-wide hotkeys: Ctrl+Alt+A turns a copied ticket summary into a structured 3-part empathetic PT/EN greeting, while Ctrl+Alt+S rewrites any copied draft for grammar and clarity directly in the clipboard.",
+      summary: "Headless Windows systray assistant binding two system-wide hotkeys: Ctrl+Alt+A turns a copied user ticket message into a structured 3-part empathetic PT/EN greeting, while Ctrl+Alt+S rewrites any copied draft for grammar and clarity directly in the clipboard.",
       problem: "Switching browser tabs to draft polite bilingual replies or fix rushed grammar breaks focus during high-volume support shifts.",
       pipeline: "Global hotkey -> Clipboard read -> Language & intent prompt -> Clipboard write + desktop toast"
     },
     pt: {
       subtitle: "Atalhos Globais de Área de Transferência para Respostas e Revisão",
-      summary: "Utilitário na bandeja do Windows com dois atalhos globais: Ctrl+Alt+A transforma o resumo copiado de um ticket em saudação empática em 3 parágrafos (PT/EN), e Ctrl+Alt+S revisa gramática e clareza diretamente no clipboard.",
+      summary: "Utilitário na bandeja do Windows com dois atalhos globais: Ctrl+Alt+A transforma a mensagem copiada de um ticket em saudação empática em 3 parágrafos (PT/EN), e Ctrl+Alt+S revisa gramática e clareza diretamente no clipboard.",
       problem: "Alternar abas para redigir respostas bilíngues ou revisar frases rápidas quebra o fluxo em turnos de suporte.",
       pipeline: "Atalho global -> Leitura do clipboard -> Prompt de idioma e tom -> Escrita no clipboard + toast"
     }
@@ -135,13 +136,13 @@ window.PORTFOLIO_PROJECTS = [
     modules: ["server.js", "services/jiraService.js", "services/geminiService.js", "public/app.js"],
     en: {
       subtitle: "Real-Time Spreadsheet Ticket Monitor & Timeline Explorer",
-      summary: "Spreadsheet-inspired local web dashboard streaming Jira updates over Server-Sent Events every 60 seconds. Separates Customer vs Engineering queues (SMI, SUP, ESUP, SR, SD), tracks linked blockers, stores private notes, exports CSV, and generates Gemini summaries.",
+      summary: "Spreadsheet-inspired local web dashboard streaming Jira updates over Server-Sent Events every 60 seconds. Separates Customer vs Engineering queues (ENG, INC, OPS, REQ, BUG), tracks linked blockers, stores private notes, exports CSV, and generates Gemini summaries.",
       problem: "Standard Jira boards hide chronological comment context and blur the handoff status between support analysts and engineering squads.",
       pipeline: "60s Jira REST poll -> Diff & SSE stream -> Customer / Engineering split -> Timeline drawer + Gemini summary"
     },
     pt: {
       subtitle: "Monitor de Tickets em Tempo Real com SSE e Resumos Gemini",
-      summary: "Painel web estilo planilha conectado via Server-Sent Events com polling a cada 60 segundos. Separa filas de Cliente e Engenharia (SMI, SUP, ESUP, SR, SD), exibe linha do tempo cronológica, tickets vinculados, notas locais e resumos via Gemini.",
+      summary: "Painel web estilo planilha conectado via Server-Sent Events com polling a cada 60 segundos. Separa filas de Cliente e Engenharia (ENG, INC, OPS, REQ, BUG), exibe linha do tempo cronológica, tickets vinculados, notas locais e resumos via Gemini.",
       problem: "Quadros padrão do Jira escondem o histórico cronológico de comentários e dificultam acompanhar dependências com a engenharia.",
       pipeline: "Polling Jira 60s -> Diff + stream SSE -> Aba Cliente / Engenharia -> Drawer de histórico + resumo Gemini"
     }
@@ -198,13 +199,13 @@ window.PORTFOLIO_PROJECTS = [
     modules: ["csat_server.py", "csat_server_token.py", "templates/stats.html"],
     en: {
       subtitle: "1-Click Multi-Language Ticket Satisfaction Server",
-      summary: "Flask microservice wired to Jira ticket-closure emails to capture 1-click thumbs-up/down ratings in PT, EN, and ES. Guards against email-client link prefetching, prevents duplicate ticket votes in PostgreSQL, and serves live `/stats` plus ReportLab PDF exports.",
+      summary: "Flask microservice wired to ticket-closure emails to capture 1-click thumbs-up/down ratings in PT, EN, and ES. Guards against email-client link prefetching, prevents duplicate ticket votes in PostgreSQL, and serves live /stats plus ReportLab PDF exports.",
       problem: "Long external survey forms get ignored by end users, while naive GET links get triggered prematurely by corporate email scanners.",
       pipeline: "Signed link -> Prefetch guard + duplicate check -> PostgreSQL insert -> Live /stats + CSV/PDF export"
     },
     pt: {
       subtitle: "Coletor CSAT 1-Clique Multilíngue com PostgreSQL",
-      summary: "Microsserviço Flask integrado ao fechamento de tickets para coletar avaliações 1-clique em PT, EN e ES. Protege contra prefetch de antivírus de e-mail, bloqueia votos duplicados no PostgreSQL e entrega painel `/stats` com exportação PDF ReportLab.",
+      summary: "Microsserviço Flask integrado ao fechamento de tickets para coletar avaliações 1-clique em PT, EN e ES. Protege contra prefetch de antivírus de e-mail, bloqueia votos duplicados no PostgreSQL e entrega painel /stats com exportação PDF ReportLab.",
       problem: "Formulários longos têm baixa adesão e links simples sofrem falsos cliques por scanners automáticos de e-mail.",
       pipeline: "Link assinado -> Proteção prefetch + trava duplicidade -> Insert PostgreSQL -> /stats ao vivo + CSV/PDF"
     }
@@ -235,20 +236,20 @@ window.PORTFOLIO_PROJECTS = [
     index: "12",
     name: "AlertBot",
     group: "support-ops",
-    kind: "Daemon · Python + Systray",
-    tags: ["Python", "Jira REST v3", "pystray", "plyer", "Regex"],
+    kind: "Daemon · Python + New Relic",
+    tags: ["Python", "New Relic", "Jira REST v3", "pystray", "plyer"],
     modules: ["alert_monitor.py", "alert_monitor.pyw"],
     en: {
-      subtitle: "Automated Incident Alert Systray Monitor & Context Enricher",
-      summary: "Polls assigned Jira alert queues every 10 seconds, resolves raw tenant UUIDs into readable customer names, extracts Runbook and telemetry dashboard links, cross-links the 3 most recent sibling alerts, and pops Windows desktop toast notifications.",
-      problem: "Raw monitoring alert tickets arrive with opaque tenant UUIDs and buried runbook URLs during time-sensitive incidents.",
-      pipeline: "10s Jira filter poll -> UUID lookup + regex URL extract -> Sibling alert links -> Internal comment + OS toast"
+      subtitle: "New Relic Incident Monitor, Context Enricher & Systray Alerter",
+      summary: "Integrated with New Relic alert webhooks routed into Jira. Polls newly assigned alert tickets every 10 seconds, resolves tenant UUIDs to readable customer names, extracts Runbook and New Relic dashboard URLs, links the 3 latest sibling alerts, and triggers desktop toast notifications.",
+      problem: "New Relic alert tickets arrive with raw tenant UUIDs and buried dashboard/runbook URLs during time-sensitive incidents.",
+      pipeline: "New Relic -> 10s Jira poll -> UUID lookup + dashboard URL extract -> Sibling alert links + OS toast"
     },
     pt: {
-      subtitle: "Monitor de Alertas na Bandeja com Enriquecimento de Contexto",
-      summary: "Consulta filas de alerta no Jira a cada 10 segundos, traduz UUIDs de tenant para nomes legíveis, extrai links de Runbook e dashboards, vincula os 3 alertas abertos mais recentes do mesmo padrão e dispara notificações toast no Windows.",
-      problem: "Tickets gerados por alertas chegam com UUIDs crus e links de diagnóstico enterrados no payload.",
-      pipeline: "Polling Jira 10s -> Mapa UUID + regex de URLs -> Vínculo de alertas irmãos -> Comentário interno + Toast"
+      subtitle: "Monitor de Alertas New Relic na Bandeja com Contexto Automático",
+      summary: "Integrado aos alertas do New Relic roteados para o Jira. Consulta novos alertas a cada 10 segundos, traduz UUIDs de tenant para nomes legíveis, extrai links de Runbook e dashboards do New Relic, vincula os 3 alertas recentes relacionados e dispara notificações toast no Windows.",
+      problem: "Tickets gerados pelo New Relic chegam com UUIDs crus e links de diagnóstico enterrados no payload.",
+      pipeline: "New Relic -> Polling Jira 10s -> Mapa UUID + URLs do dashboard -> Vínculo de alertas + Toast"
     }
   },
   {
@@ -275,12 +276,6 @@ window.PORTFOLIO_PROJECTS = [
 ];
 
 window.PORTFOLIO_SAMPLES = {
-  flylowAirports: [
-    { iata: "CNF", city: "Belo Horizonte", name: "Confins", group: "bh" },
-    { iata: "GRU", city: "Sao Paulo", name: "Guarulhos", group: "sp" },
-    { iata: "CGH", city: "Sao Paulo", name: "Congonhas", group: "sp" },
-    { iata: "VCP", city: "Campinas", name: "Viracopos", group: "sp" }
-  ],
   flylowRoutes: [
     { id: "cnf-sdu-la", origin: "CNF", dest: "SDU", destCity: "Rio de Janeiro", airline: "LATAM", code: "LA-3142", basePrice: 320, rtFactor: 1.85, taxAdult: 38.5, taxChild: 38.5, childDiscount: 0.2, durationMin: 65, dep: "07:15", arr: "08:20", aircraft: "Airbus A320", intl: false },
     { id: "cnf-cgh-la", origin: "CNF", dest: "CGH", destCity: "Sao Paulo", airline: "LATAM", code: "LA-3024", basePrice: 340, rtFactor: 1.8, taxAdult: 39, taxChild: 39, childDiscount: 0.2, durationMin: 75, dep: "06:40", arr: "07:55", aircraft: "Airbus A320", intl: false },
@@ -311,7 +306,7 @@ window.PORTFOLIO_SAMPLES = {
       sharpHomeOdd: 1.72,
       sharpAwayOdd: 2.24,
       verdictEn: "High value (Confidence 83%) — Golden State holds a 2-day rest edge while Lakers interior defense faces questionable mobility.",
-      verdictPt: "Alto valor (Confiança 83%) — Golden State tem 2 dias extras de descanso enquanto a defesa interna dos Lakers tem mobilidade reduzida."
+      verdictPt: "Alto valor (Confiança 83%) — Golden State chega com 2 dias extras de descanso, enquanto os Lakers têm dúvida na defesa de garrafão."
     },
     {
       id: "bra-cam-fla",
@@ -323,8 +318,8 @@ window.PORTFOLIO_SAMPLES = {
       sharpBook: "Pinnacle",
       sharpHomeOdd: 2.52,
       sharpAwayOdd: 1.61,
-      verdictEn: "Moderate edge (Confidence 76%) — Home side full starting midfield confirmed; retail book lagging sharp line movement.",
-      verdictPt: "Vantagem moderada (Confiança 76%) — Meio-campo titular confirmado em casa; casa varejista atrasada frente ao ajuste da Pinnacle."
+      verdictEn: "Moderate edge (Confidence 76%) — Home side full starting midfield confirmed; retail book lagging global reference movement.",
+      verdictPt: "Vantagem moderada (Confiança 76%) — Meio-campo titular confirmado em casa e a casa tradicional ainda não corrigiu a cotação."
     },
     {
       id: "ucl-rma-ars",
@@ -336,15 +331,35 @@ window.PORTFOLIO_SAMPLES = {
       sharpBook: "Pinnacle",
       sharpHomeOdd: 1.88,
       sharpAwayOdd: 2.02,
-      verdictEn: "Measured value (Confidence 72%) — Balanced expected goals profile makes retail price above fair devigged probability.",
-      verdictPt: "Valor medido (Confiança 72%) — Perfil equilibrado de xG deixa a cotação oferecida acima da probabilidade justa."
+      verdictEn: "Measured value (Confidence 72%) — Balanced expected goals profile keeps the offered price above fair probability.",
+      verdictPt: "Valor equilibrado (Confiança 72%) — Os números recentes das equipes deixam a cotação oferecida acima da chance real do evento."
     }
   ],
-  aircatchKeywords: ["Confins", "CNF", "GOL", "LATAM", "AZUL", "Copa", "Avianca", "Aeroporto", "Terminal 1", "Terminal 2"],
-  aircatchOffers: [
-    { id: "airport", labelEn: "Airport offer (Confins T1)", labelPt: "Oferta aeroporto (Confins T1)", fare: "R$ 94,50", distance: "38.4 km", pickup: "Savassi, Belo Horizonte", destination: "Aeroporto Internacional de Confins (CNF) - Terminal 1", button: "Aceitar" },
-    { id: "radar", labelEn: "Open radar (LATAM / CNF)", labelPt: "Radar aberto (LATAM / CNF)", fare: "R$ 108,00", distance: "41.2 km", pickup: "Pampulha, Belo Horizonte", destination: "Desembarque LATAM - Aeroporto CNF", button: "Selecionar" },
-    { id: "city", labelEn: "Regular city ride (Ignored)", labelPt: "Corrida urbana comum (Ignorada)", fare: "R$ 18,40", distance: "4.6 km", pickup: "Funcionários", destination: "Av. Raja Gabaglia, 2000 - Estoril", button: "Aceitar" }
+  rotafacilRides: [
+    {
+      id: "uber-savassi",
+      sourceApp: "Uber Driver",
+      fare: "R$ 28,40",
+      distance: "9.2 km",
+      pickup: "Rua Pernambuco, 1070 - Savassi, Belo Horizonte",
+      dropoff: "Av. Fleming, 900 - Ouro Preto, Belo Horizonte"
+    },
+    {
+      id: "99-centro",
+      sourceApp: "99 Motorista",
+      fare: "R$ 42,80",
+      distance: "16.5 km",
+      pickup: "Av. Afonso Pena, 1500 - Centro, Belo Horizonte",
+      dropoff: "Av. Cristiano Machado, 4000 - União, Belo Horizonte"
+    },
+    {
+      id: "uber-buritis",
+      sourceApp: "Uber Driver",
+      fare: "R$ 19,90",
+      distance: "5.4 km",
+      pickup: "Av. Professor Mário Werneck, 1685 - Buritis",
+      dropoff: "BH Shopping - Belvedere, Belo Horizonte"
+    }
   ],
   jiraTickets: [
     {
@@ -400,7 +415,7 @@ window.PORTFOLIO_SAMPLES = {
       aiSummaryPt: "Upload multipart em blocos de 2 MB mesclado em staging; aguardando validação de regressão."
     },
     {
-      key: "SUP-712",
+      key: "INC-712",
       queue: "engineering",
       priority: "Low",
       status: "Waiting Validation",

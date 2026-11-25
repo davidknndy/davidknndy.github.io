@@ -5,9 +5,11 @@
 
   const state = {
     lang: localStorage.getItem("portfolio_lang") === "pt" ? "pt" : "en",
+    theme: localStorage.getItem("portfolio_theme") === "light" ? "light" : "dark",
     filter: "all",
     search: "",
-    activeId: "flylow"
+    activeId: "flylow",
+    heroId: "flylow"
   };
 
   const els = {
@@ -19,12 +21,18 @@
     heroPreviewMount: document.getElementById("heroPreviewMount"),
     archiveTableBody: document.getElementById("archiveTableBody"),
     projectSearch: document.getElementById("projectSearch"),
+    themeToggle: document.getElementById("themeToggle"),
     menuToggle: document.getElementById("menuToggle"),
     mobileMenu: document.getElementById("mobileMenu")
   };
 
   function t(key) {
     return (i18n[state.lang] && i18n[state.lang][key]) || i18n.en[key] || key;
+  }
+
+  function applyTheme() {
+    document.documentElement.setAttribute("data-theme", state.theme);
+    els.themeToggle.setAttribute("aria-pressed", String(state.theme === "light"));
   }
 
   function applyStaticI18n() {
@@ -78,7 +86,7 @@
     });
 
     if (!html) {
-      html = `<div class="muted-note" style="padding:12px 8px">No matching projects</div>`;
+      html = `<div class="muted-note" style="padding:12px 8px">${state.lang === "pt" ? "Nenhum projeto encontrado" : "No matching projects"}</div>`;
     }
 
     els.sidebarList.innerHTML = html;
@@ -103,6 +111,7 @@
           <span class="stage-subtitle">${copy.subtitle}</span>
         </div>
         <div class="stage-tags">
+          ${p.liveUrl ? `<a href="${p.liveUrl}" target="_blank" rel="noopener noreferrer" class="stage-live-link">flylow.onrender.com</a>` : ""}
           ${p.tags.map((tag) => `<span class="mono-tag">${tag}</span>`).join("")}
         </div>
       </div>
@@ -161,6 +170,13 @@
     });
   }
 
+  function renderHeroPreview() {
+    document.querySelectorAll("[data-hero-tab]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.heroTab === state.heroId);
+    });
+    demos.renderHeroPreview(els.heroPreviewMount, state.lang, state.heroId);
+  }
+
   function selectProject(id) {
     if (!projects.some((p) => p.id === id)) return;
     state.activeId = id;
@@ -169,14 +185,65 @@
     renderStage();
   }
 
-  window.rerenderFlyLowAll = function () {
-    demos.renderHeroPreview(els.heroPreviewMount, state.lang);
-    if (state.activeId === "flylow") {
-      demos.renderProjectDemo("flylow", els.demoMount, state.lang);
+  function initRevealObserver() {
+    const targets = document.querySelectorAll("[data-reveal]");
+    if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      targets.forEach((el) => el.classList.add("is-visible"));
+      return;
     }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+    targets.forEach((el) => obs.observe(el));
+  }
+
+  function animateHeroCounters() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll("[data-count-to]").forEach((el) => {
+      const target = Number(el.dataset.countTo);
+      const suffix = el.dataset.countSuffix || "";
+      const start = performance.now();
+      const dur = 520;
+      const tick = (now) => {
+        const progress = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = `${Math.round(target * eased)}${suffix}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  window.rerenderFlyLowAll = function () {
+    if (state.heroId === "flylow") renderHeroPreview();
+    if (state.activeId === "flylow") demos.renderProjectDemo("flylow", els.demoMount, state.lang);
+  };
+
+  window.rerenderRadarAll = function () {
+    if (state.heroId === "radar-monitor") renderHeroPreview();
+    if (state.activeId === "radar-monitor") demos.renderProjectDemo("radar-monitor", els.demoMount, state.lang);
+  };
+
+  window.rerenderRotaFacilAll = function () {
+    if (state.heroId === "rotafacil") renderHeroPreview();
+    if (state.activeId === "rotafacil") demos.renderProjectDemo("rotafacil", els.demoMount, state.lang);
   };
 
   function initEvents() {
+    els.themeToggle.addEventListener("click", () => {
+      state.theme = state.theme === "dark" ? "light" : "dark";
+      localStorage.setItem("portfolio_theme", state.theme);
+      applyTheme();
+    });
+
     document.querySelectorAll(".lang-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         state.lang = btn.dataset.lang;
@@ -185,7 +252,14 @@
         renderSidebar();
         renderStage();
         renderArchive();
-        demos.renderHeroPreview(els.heroPreviewMount, state.lang);
+        renderHeroPreview();
+      });
+    });
+
+    document.querySelectorAll("[data-hero-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.heroId = btn.dataset.heroTab;
+        renderHeroPreview();
       });
     });
 
@@ -207,6 +281,13 @@
       renderSidebar();
     });
 
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+        e.preventDefault();
+        els.projectSearch.focus();
+      }
+    });
+
     els.sidebarList.addEventListener("keydown", (e) => {
       if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
       const visible = getFilteredProjects();
@@ -218,7 +299,7 @@
     });
 
     document.getElementById("heroOpenWorkbench").addEventListener("click", () => {
-      selectProject("flylow");
+      selectProject(state.heroId);
       document.getElementById("workbench").scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
@@ -237,6 +318,7 @@
   }
 
   function bootstrap() {
+    applyTheme();
     const hashMatch = window.location.hash.match(/project=([a-z0-9-]+)/i);
     if (hashMatch && projects.some((p) => p.id === hashMatch[1])) {
       state.activeId = hashMatch[1];
@@ -245,8 +327,10 @@
     renderSidebar();
     renderStage();
     renderArchive();
-    demos.renderHeroPreview(els.heroPreviewMount, state.lang);
+    renderHeroPreview();
     initEvents();
+    initRevealObserver();
+    animateHeroCounters();
   }
 
   bootstrap();

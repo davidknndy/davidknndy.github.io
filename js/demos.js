@@ -5,11 +5,11 @@
     flylow: { hub: "GRU", cap: 900, trip: "oneway", adults: 1, children: 0, selectedId: "gru-eze-fo" },
     radar: { streetIdx: 0, speed: 64, distance: 180, mirrored: false },
     lebet: { matchIdx: 0, sharpOdd: 2.24, sharpOppOdd: 1.72, softOdd: 2.35, bankroll: 2000 },
-    aircatch: { offerIdx: 0, phase: "monitoring", cooldown: 0, timerId: null },
+    rotafacil: { rideIdx: 0, captured: true, expanded: true },
     jira: { queue: "all", selectedKey: "ACME-418", notes: { "ACME-418": "Follow up after 4.19 build verification" } },
     blockly: { preset: "buggy" },
     chatjira: { scope: "customer", dateField: "resolved", range: "30d" },
-    csat: { lang: "en", ticketId: "SUP-1042", votedTickets: {}, up: 142, down: 9 },
+    csat: { lang: "en", ticketId: "INC-1042", votedTickets: {}, up: 142, down: 9 },
     botkb: { ticketIdx: 0 },
     alertbot: { presetIdx: 0 },
     testplan: {
@@ -144,14 +144,23 @@
                   <div class="kpi-val accent" style="font-size:18px">${fmtBRL(p.total)}</div>
                 </div>
               </div>
-              <div class="row-between">
-                <span class="muted-note">${pt ? "Inclui bolsa pessoal + mala 10kg e taxas estimadas" : "Includes personal item + 10kg carry-on and estimated taxes"}</span>
-                <a href="${gfUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">Google Flights</a>
+              <div class="row-between" style="flex-wrap:wrap">
+                <span class="muted-note">${pt ? "Inclui bolsa + mala 10kg e taxas" : "Includes carry-on + taxes"}</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <a href="${gfUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">Google Flights</a>
+                  <a href="https://flylow.onrender.com/" target="_blank" rel="noopener noreferrer" class="btn btn-accent btn-sm">${pt ? "Abrir FlyLow ao vivo" : "Open live site"}</a>
+                </div>
               </div>
             </div>
           `;
         })() : ""}
       </div>
+      ${compact ? `
+        <div class="row-between" style="margin-top:12px">
+          <span class="mono-meta">flylow.onrender.com</span>
+          <a href="https://flylow.onrender.com/" target="_blank" rel="noopener noreferrer" class="preview-jump">${pt ? "Abrir app ao vivo" : "Open live app"}</a>
+        </div>
+      ` : ""}
     `;
 
     mount.querySelectorAll("[data-fl-hub]").forEach((btn) => {
@@ -195,38 +204,39 @@
     });
   }
 
-  function renderRadarMonitor(mount, lang) {
+  function renderRadarMonitor(mount, lang, compact) {
     const st = state.radar;
     const pt = lang === "pt";
     const cam = S.radarsBH[st.streetIdx];
     const overspeed = st.speed > cam.limit;
     const alertActive = st.distance <= 350;
+    const proxPct = Math.max(5, Math.min(100, Math.round(((600 - st.distance) / 560) * 100)));
     const ttsLine = overspeed
       ? `Atenção. Radar de ${cam.limit} quilômetros por hora a ${st.distance} metros na ${cam.street}. Reduza a velocidade.`
       : `Radar de ${cam.limit} quilômetros por hora a ${st.distance} metros na ${cam.street}.`;
 
     mount.innerHTML = `
-      <div class="demo-grid-2">
+      <div class="${compact ? "stack-md" : "demo-grid-2"}">
         <div class="demo-box stack-md">
           <div class="field">
             <span class="field-label">${pt ? "Ponto geocodificado (BH)" : "Geocoded BH camera"}</span>
-            <select class="select" id="rmStreet">
+            <select class="select" data-rm-street>
               ${S.radarsBH.map((r, i) => `<option value="${i}" ${i === st.streetIdx ? "selected" : ""}>${esc(r.street)} (${r.limit} km/h)</option>`).join("")}
             </select>
           </div>
           <div class="field">
             <span class="field-label">${pt ? "Velocidade simulada:" : "Simulated speed:"} <span class="tabular">${st.speed} km/h</span></span>
-            <input type="range" class="range" id="rmSpeed" min="20" max="100" step="2" value="${st.speed}">
+            <input type="range" class="range" data-rm-speed min="20" max="100" step="2" value="${st.speed}">
           </div>
           <div class="field">
             <span class="field-label">${pt ? "Distância Haversine:" : "Haversine distance:"} <span class="tabular">${st.distance} m</span></span>
-            <input type="range" class="range" id="rmDist" min="40" max="600" step="10" value="${st.distance}">
+            <input type="range" class="range" data-rm-dist min="40" max="600" step="10" value="${st.distance}">
           </div>
           <div class="row-between">
-            <button type="button" class="btn btn-secondary btn-sm" id="rmMirrorBtn">${st.mirrored ? (pt ? "Desativar espelho HUD" : "Disable mirror HUD") : (pt ? "Espelhar para para-brisa" : "Mirror windshield HUD")}</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-rm-mirror>${st.mirrored ? (pt ? "Desativar espelho HUD" : "Disable mirror HUD") : (pt ? "Espelhar para para-brisa" : "Mirror windshield HUD")}</button>
             <span class="mono-meta">${cam.lat.toFixed(4)}, ${cam.lon.toFixed(4)}</span>
           </div>
-          <div class="code-block">${pt ? "Script TTS PT-BR:" : "PT-BR TTS output:"}\n"${esc(ttsLine)}"</div>
+          ${compact ? "" : `<div class="code-block">${pt ? "Script TTS PT-BR:" : "PT-BR TTS output:"}\n"${esc(ttsLine)}"</div>`}
         </div>
         <div class="hud-stage ${st.mirrored ? "mirrored" : ""}">
           <div class="row-between" style="width:100%">
@@ -240,29 +250,34 @@
             <div class="hud-speed-readout ${overspeed ? "overspeed" : ""}">${st.speed}</div>
             <div class="mono-meta">km/h</div>
           </div>
-          <div class="row-between" style="width:100%">
-            <span class="muted-note">${esc(cam.street)}</span>
-            <span class="mono-tag tabular">${st.distance} m</span>
+          <div class="stack-sm" style="width:100%">
+            <div class="proximity-meter">
+              <div class="proximity-meter-fill ${overspeed || alertActive ? "danger" : ""}" style="width:${proxPct}%"></div>
+            </div>
+            <div class="row-between">
+              <span class="muted-note">${esc(cam.street)}</span>
+              <span class="mono-tag tabular">${st.distance} m</span>
+            </div>
           </div>
         </div>
       </div>
     `;
 
-    mount.querySelector("#rmStreet").addEventListener("change", (e) => {
+    mount.querySelector("[data-rm-street]").addEventListener("change", (e) => {
       st.streetIdx = Number(e.target.value);
-      renderRadarMonitor(mount, lang);
+      if (window.rerenderRadarAll) window.rerenderRadarAll();
     });
-    mount.querySelector("#rmSpeed").addEventListener("input", (e) => {
+    mount.querySelector("[data-rm-speed]").addEventListener("input", (e) => {
       st.speed = Number(e.target.value);
-      renderRadarMonitor(mount, lang);
+      if (window.rerenderRadarAll) window.rerenderRadarAll();
     });
-    mount.querySelector("#rmDist").addEventListener("input", (e) => {
+    mount.querySelector("[data-rm-dist]").addEventListener("input", (e) => {
       st.distance = Number(e.target.value);
-      renderRadarMonitor(mount, lang);
+      if (window.rerenderRadarAll) window.rerenderRadarAll();
     });
-    mount.querySelector("#rmMirrorBtn").addEventListener("click", () => {
+    mount.querySelector("[data-rm-mirror]").addEventListener("click", () => {
       st.mirrored = !st.mirrored;
-      renderRadarMonitor(mount, lang);
+      if (window.rerenderRadarAll) window.rerenderRadarAll();
     });
   }
 
@@ -271,7 +286,6 @@
     const pt = lang === "pt";
     const m = S.lebetMatches[st.matchIdx];
 
-    // Exact proportional devig from calculator.py
     const rawP1 = 1 / st.sharpOdd;
     const rawP2 = 1 / st.sharpOppOdd;
     const overround = rawP1 + rawP2;
@@ -292,12 +306,12 @@
             ${S.lebetMatches.map((item, i) => `<option value="${i}" ${i === st.matchIdx ? "selected" : ""}>${esc(item.league)} · ${esc(item.match)}</option>`).join("")}
           </select>
         </div>
-        <div class="field" style="width:110px">
-          <span class="field-label">${pt ? "Odd Sharp" : "Sharp odd"}</span>
+        <div class="field" style="width:120px">
+          <span class="field-label">${pt ? "Odd Referência" : "Reference odd"}</span>
           <input type="number" step="0.01" min="1.05" class="input tabular" id="lbSharp" value="${st.sharpOdd}">
         </div>
-        <div class="field" style="width:110px">
-          <span class="field-label">${pt ? "Odd Soft" : "Soft odd"}</span>
+        <div class="field" style="width:120px">
+          <span class="field-label">${pt ? "Odd da Casa" : "Offered odd"}</span>
           <input type="number" step="0.01" min="1.05" class="input tabular" id="lbSoft" value="${st.softOdd}">
         </div>
         <div class="field" style="width:120px">
@@ -308,17 +322,17 @@
 
       <div class="kpi-row">
         <div class="kpi-card">
-          <div class="kpi-label">${pt ? "Odd justa (Devig)" : "Fair devig odd"}</div>
+          <div class="kpi-label">${pt ? "Odd justa (sem margem)" : "Fair devig odd"}</div>
           <div class="kpi-val">${fairOdd.toFixed(2)}</div>
           <div class="kpi-sub">${(fairProb * 100).toFixed(1)}% · vig ${marginPct.toFixed(2)}%</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">${pt ? "Valor esperado (+EV)" : "Expected value (+EV)"}</div>
+          <div class="kpi-label">${pt ? "Vantagem (+EV)" : "Expected value (+EV)"}</div>
           <div class="kpi-val ${evPct > 0 ? "positive" : "negative"}">${evPct >= 0 ? "+" : ""}${evPct.toFixed(2)}%</div>
           <div class="kpi-sub">${esc(m.softBook)} vs ${esc(m.sharpBook)}</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">${pt ? "Gestão 1/4 Kelly" : "1/4 Kelly stake"}</div>
+          <div class="kpi-label">${pt ? "Entrada 1/4 Kelly" : "1/4 Kelly stake"}</div>
           <div class="kpi-val accent">${quarterKellyPct.toFixed(2)}%</div>
           <div class="kpi-sub">${fmtBRL(stakeBRL)}</div>
         </div>
@@ -355,103 +369,91 @@
     });
   }
 
-  function renderAirCatch(mount, lang) {
-    const st = state.aircatch;
+  function renderRotaFacil(mount, lang, compact) {
+    const st = state.rotafacil;
     const pt = lang === "pt";
-    const offer = S.aircatchOffers[st.offerIdx];
-    const matched = S.aircatchKeywords.filter((kw) => offer.destination.toLowerCase().includes(kw.toLowerCase()));
+    const ride = S.rotafacilRides[st.rideIdx];
+    const encPickup = encodeURIComponent(ride.pickup);
+    const encDropoff = encodeURIComponent(ride.dropoff);
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encDropoff}&waypoints=${encPickup}&travelmode=driving`;
+    const wazePickupUrl = `https://waze.com/ul?q=${encPickup}&navigate=yes`;
+    const wazeDropoffUrl = `https://waze.com/ul?q=${encDropoff}&navigate=yes`;
 
     mount.innerHTML = `
-      <div class="demo-grid-2">
+      <div class="${compact ? "stack-md" : "demo-grid-2"}">
         <div class="stack-md">
           <div class="field">
-            <span class="field-label">${pt ? "Cenário de corrida" : "Incoming ride scenario"}</span>
-            <select class="select" id="acOffer">
-              ${S.aircatchOffers.map((o, i) => `<option value="${i}" ${i === st.offerIdx ? "selected" : ""}>${esc(pt ? o.labelPt : o.labelEn)}</option>`).join("")}
+            <span class="field-label">${pt ? "Corrida capturada na tela" : "Captured ride screen"}</span>
+            <select class="select" data-rf-ride>
+              ${S.rotafacilRides.map((r, i) => `<option value="${i}" ${i === st.rideIdx ? "selected" : ""}>${esc(r.sourceApp)} · ${esc(r.fare)} (${esc(r.distance)})</option>`).join("")}
             </select>
           </div>
-          <div class="demo-box stack-sm">
-            <div class="field-label">${pt ? "Keywords monitoradas (Node + ML Kit OCR)" : "Monitored keywords (Node + ML Kit OCR)"}</div>
-            <div class="stage-tags">
-              ${S.aircatchKeywords.map((kw) => {
-                const hit = matched.includes(kw);
-                return `<span class="mono-tag" style="${hit && st.phase !== "monitoring" ? "color:var(--positive);border-color:rgba(76,195,138,0.4)" : ""}">${esc(kw)}</span>`;
-              }).join("")}
+          ${compact ? "" : `
+            <div class="demo-box stack-sm">
+              <div class="row-between">
+                <span class="field-label">${pt ? "Intent gerado (NavigationHelper.kt)" : "Generated Intent (NavigationHelper.kt)"}</span>
+                <span class="status-pill positive"><span class="status-dot"></span>Multi-Stop</span>
+              </div>
+              <div class="code-block" style="font-size:11px">Google Maps (2 stops):\nwaypoints=${esc(ride.pickup)}\ndestination=${esc(ride.dropoff)}</div>
             </div>
-          </div>
-          <div class="row-between">
-            <button type="button" class="btn btn-accent" id="acTrigger">${pt ? "Simular detecção" : "Simulate detection"}</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="acReset">${pt ? "Resetar" : "Reset"}</button>
-          </div>
-          <div class="mono-meta">
-            ${st.phase === "monitoring" ? (pt ? "Estado: Monitorando nós da tela" : "State: Monitoring accessibility nodes") :
-              st.phase === "detected" ? (pt ? "Estado: Keyword detectada — preparando dispatchGesture" : "State: Keyword matched — preparing dispatchGesture") :
-              st.phase === "accepted" ? (pt ? `Estado: Aceite disparado · Cooldown ${st.cooldown}s` : `State: Gesture dispatched · Cooldown ${st.cooldown}s`) :
-              (pt ? "Estado: Sem keyword de aeroporto — ignorado" : "State: No airport keyword — skipped")}
+          `}
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-accent btn-sm">${pt ? "Google Maps (2 paradas)" : "Google Maps (2 stops)"}</a>
+            <a href="${wazePickupUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">${pt ? "Waze Embarque" : "Waze Pickup"}</a>
+            <a href="${wazeDropoffUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">${pt ? "Waze Destino" : "Waze Drop-off"}</a>
+            <button type="button" class="btn btn-secondary btn-sm" data-rf-copy>${pt ? "Copiar endereço" : "Copy address"}</button>
           </div>
         </div>
 
         <div class="phone-frame">
           <div class="phone-topbar">
-            <span>com.ubercab.driver</span>
-            <span>Accessibility ON</span>
+            <span>${esc(ride.sourceApp)}</span>
+            <button type="button" class="floating-bubble-pill" data-rf-toggle>
+              ${st.expanded ? (pt ? "Rota Fácil Ativo" : "Rota Fácil Active") : "RF"}
+            </button>
           </div>
-          <div class="overlay-bubble ${st.phase}" title="OverlayService">${st.phase === "accepted" ? "OK" : st.phase === "detected" ? "!" : st.phase === "paused" ? "--" : "M"}</div>
           <div class="ride-card">
             <div class="row-between">
-              <span style="font-size:20px;font-weight:500" class="tabular">${esc(offer.fare)}</span>
-              <span class="mono-tag">${esc(offer.distance)}</span>
+              <span style="font-size:20px;font-weight:500" class="tabular">${esc(ride.fare)}</span>
+              <span class="mono-tag">${esc(ride.distance)}</span>
             </div>
-            <div class="stack-sm">
-              <div class="muted-note">${pt ? "Embarque:" : "Pickup:"} <span style="color:var(--text-primary)">${esc(offer.pickup)}</span></div>
-              <div class="muted-note">${pt ? "Destino:" : "Destination:"} <span style="color:var(--text-primary)">${esc(offer.destination)}</span></div>
+            <div class="route-stops">
+              <div class="route-stop">
+                <span class="route-node pickup"></span>
+                <div>
+                  <div class="mono-meta">${pt ? "Embarque (Parada 1)" : "Pickup (Waypoint 1)"}</div>
+                  <div style="font-size:13px;color:var(--text-primary)">${esc(ride.pickup)}</div>
+                </div>
+              </div>
+              <div class="route-stop">
+                <span class="route-node dropoff"></span>
+                <div>
+                  <div class="mono-meta">${pt ? "Destino final" : "Final drop-off"}</div>
+                  <div style="font-size:13px;color:var(--text-primary)">${esc(ride.dropoff)}</div>
+                </div>
+              </div>
             </div>
-            <button type="button" class="btn ${st.phase === "accepted" ? "btn-accent" : "btn-primary"}" style="width:100%;height:38px" disabled>
-              ${st.phase === "accepted" ? (pt ? "Aceito automaticamente" : "Auto-accepted") : esc(offer.button)}
-            </button>
+            ${st.expanded ? `
+              <div class="mono-meta">${pt ? "AccessibilityService: endereços normalizados e prontos para envio." : "AccessibilityService: addresses normalized and ready for handoff."}</div>
+            ` : ""}
           </div>
         </div>
       </div>
     `;
 
-    mount.querySelector("#acOffer").addEventListener("change", (e) => {
-      if (st.timerId) clearInterval(st.timerId);
-      st.offerIdx = Number(e.target.value);
-      st.phase = "monitoring";
-      st.cooldown = 0;
-      renderAirCatch(mount, lang);
+    mount.querySelector("[data-rf-ride]").addEventListener("change", (e) => {
+      st.rideIdx = Number(e.target.value);
+      if (window.rerenderRotaFacilAll) window.rerenderRotaFacilAll();
     });
-
-    mount.querySelector("#acReset").addEventListener("click", () => {
-      if (st.timerId) clearInterval(st.timerId);
-      st.phase = "monitoring";
-      st.cooldown = 0;
-      renderAirCatch(mount, lang);
+    mount.querySelector("[data-rf-toggle]").addEventListener("click", () => {
+      st.expanded = !st.expanded;
+      if (window.rerenderRotaFacilAll) window.rerenderRotaFacilAll();
     });
-
-    mount.querySelector("#acTrigger").addEventListener("click", () => {
-      if (st.timerId) clearInterval(st.timerId);
-      if (matched.length === 0) {
-        st.phase = "paused";
-        renderAirCatch(mount, lang);
-        return;
+    mount.querySelector("[data-rf-copy]").addEventListener("click", () => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(`${ride.pickup} -> ${ride.dropoff}`).catch(() => {});
       }
-      st.phase = "detected";
-      renderAirCatch(mount, lang);
-      setTimeout(() => {
-        st.phase = "accepted";
-        st.cooldown = 6;
-        renderAirCatch(mount, lang);
-        st.timerId = setInterval(() => {
-          st.cooldown -= 1;
-          if (st.cooldown <= 0) {
-            clearInterval(st.timerId);
-            st.timerId = null;
-            st.phase = "monitoring";
-          }
-          if (mount.isConnected) renderAirCatch(mount, lang);
-        }, 1000);
-      }, 450);
+      showToast("Rota Fácil", pt ? `Destino copiado: ${ride.dropoff}` : `Copied drop-off: ${ride.dropoff}`);
     });
   }
 
@@ -467,7 +469,7 @@
         <div class="seg-group">
           <button type="button" class="seg-btn ${st.queue === "all" ? "active" : ""}" data-jm-q="all">${pt ? "Todos (4)" : "All (4)"}</button>
           <button type="button" class="seg-btn ${st.queue === "customer" ? "active" : ""}" data-jm-q="customer">${pt ? "Cliente" : "Customer"}</button>
-          <button type="button" class="seg-btn ${st.queue === "engineering" ? "active" : ""}" data-jm-q="engineering">${pt ? "Engenharia (SMI/SUP)" : "Engineering"}</button>
+          <button type="button" class="seg-btn ${st.queue === "engineering" ? "active" : ""}" data-jm-q="engineering">${pt ? "Engenharia (ENG/INC)" : "Engineering"}</button>
         </div>
         <span class="mono-meta">SSE /api/stream · 60s poll</span>
       </div>
@@ -573,7 +575,7 @@
   function renderChatJira(mount, lang) {
     const st = state.chatjira;
     const pt = lang === "pt";
-    const jql = `project in (${st.scope === "customer" ? "ACME, BETA, GAMMA" : "SUP, ENG, SR"}) AND ${st.dateField} >= -${st.range} ORDER BY ${st.dateField} DESC`;
+    const jql = `project in (${st.scope === "customer" ? "ACME, BETA, GAMMA" : "INC, ENG, REQ"}) AND ${st.dateField} >= -${st.range} ORDER BY ${st.dateField} DESC`;
     const mult = st.range === "7d" ? 0.35 : st.range === "30d" ? 1 : 2.6;
     const baseData = st.scope === "customer"
       ? [
@@ -694,7 +696,7 @@
 
     mount.querySelectorAll("[data-cs-lang]").forEach((b) => b.addEventListener("click", () => { st.lang = b.dataset.csLang; renderCsat(mount, lang); }));
     mount.querySelector("#csTicket").addEventListener("input", (e) => {
-      st.ticketId = e.target.value.trim() || "SUP-1042";
+      st.ticketId = e.target.value.trim() || "INC-1042";
     });
     mount.querySelector("#csTicket").addEventListener("change", () => renderCsat(mount, lang));
     mount.querySelector("#csUp").addEventListener("click", () => {
@@ -722,20 +724,20 @@
         langDetected: "en (0.99)",
         cql: 'space = "KB" AND text ~ "HTTP 413 attachment upload"',
         matches: [
-          { key: "SUP-391", sim: "0.91", title: "Increase multipart chunking limit on sync worker" },
-          { key: "SUP-284", sim: "0.84", title: "Reverse proxy client_max_body_size override" }
+          { key: "INC-391", sim: "0.91", title: "Increase multipart chunking limit on sync worker" },
+          { key: "INC-284", sim: "0.84", title: "Reverse proxy client_max_body_size override" }
         ],
-        comment: "Internal triage note: Detected language EN. Top resolved match SUP-391 (cosine 0.91) + KB article 'Configuring Upload Chunk Thresholds'."
+        comment: "Internal triage note: Detected language EN. Top resolved match INC-391 (cosine 0.91) + KB article 'Configuring Upload Chunk Thresholds'."
       },
       {
         label: "PT · Erro de permissão no SSO corporativo",
         langDetected: "pt (0.98)",
         cql: 'space = "KB" AND text ~ "SAML assertion role mapping"',
         matches: [
-          { key: "SUP-405", sim: "0.89", title: "Mapeamento de grupo Azure AD sem perfil padrão" },
-          { key: "SUP-312", sim: "0.81", title: "Expiração de certificado IdP no login móvel" }
+          { key: "INC-405", sim: "0.89", title: "Mapeamento de grupo Azure AD sem perfil padrão" },
+          { key: "INC-312", sim: "0.81", title: "Expiração de certificado IdP no login móvel" }
         ],
-        comment: "Nota interna de triagem: Idioma PT detectado. Ticket similar SUP-405 (cosseno 0.89) + artigo KB 'Configuração de Claims SAML'."
+        comment: "Nota interna de triagem: Idioma PT detectado. Ticket similar INC-405 (cosseno 0.89) + artigo KB 'Configuração de Claims SAML'."
       }
     ];
     const c = cases[st.ticketIdx];
@@ -780,18 +782,18 @@
     const pt = lang === "pt";
     const payloads = [
       {
-        title: "SSA-812 · High DB latency",
+        title: "ALERT-204 · High DB latency",
         uuid: "8f3c1e20-9a41-4c72-b102-1199aa00bb01",
         tenant: "Tenant Northwind Logistics",
         runbook: "https://runbooks.example.internal/db-pool-saturation",
-        dashboard: "https://telemetry.example.internal/d/postgres-lat"
+        dashboard: "https://one.newrelic.com/nr1-core/dashboards/postgres-latency"
       },
       {
-        title: "SSA-819 · Sync queue backlog",
+        title: "ALERT-216 · Sync queue backlog",
         uuid: "4b7d9912-1120-4f88-9012-7722cc44dd09",
         tenant: "Tenant Meridian Energy",
         runbook: "https://runbooks.example.internal/worker-drain",
-        dashboard: "https://telemetry.example.internal/d/queue-lag"
+        dashboard: "https://one.newrelic.com/nr1-core/dashboards/queue-lag"
       }
     ];
     const p = payloads[st.presetIdx];
@@ -804,8 +806,8 @@
         <button type="button" class="btn btn-accent" id="abToastBtn">${pt ? "Disparar alerta desktop" : "Trigger desktop toast"}</button>
       </div>
       <div class="demo-grid-2">
-        <div class="code-block">Raw payload:\n{\n  "alert": "${esc(p.title)}",\n  "tenant_uuid": "${esc(p.uuid)}",\n  "runbook": "${esc(p.runbook)}",\n  "dashboard": "${esc(p.dashboard)}"\n}</div>
-        <div class="code-block">${pt ? "Comentário interno gerado:" : "Generated internal comment:"}\nCustomer: ${esc(p.tenant)}\nRunbook: ${esc(p.runbook)}\nDashboard: ${esc(p.dashboard)}\nRelated open alerts: SSA-804, SSA-798, SSA-791</div>
+        <div class="code-block">New Relic webhook payload:\n{\n  "source": "New Relic",\n  "alert": "${esc(p.title)}",\n  "tenant_uuid": "${esc(p.uuid)}",\n  "runbook": "${esc(p.runbook)}",\n  "new_relic_dashboard": "${esc(p.dashboard)}"\n}</div>
+        <div class="code-block">${pt ? "Comentário interno gerado:" : "Generated internal comment:"}\nCustomer: ${esc(p.tenant)}\nRunbook: ${esc(p.runbook)}\nNew Relic Dashboard: ${esc(p.dashboard)}\nRelated open alerts: ALERT-198, ALERT-192, ALERT-185</div>
       </div>
     `;
 
@@ -814,7 +816,7 @@
       renderAlertBot(mount, lang);
     }));
     mount.querySelector("#abToastBtn").addEventListener("click", () => {
-      showToast(`AlertBot · ${p.title}`, `${p.tenant} — Runbook & 3 sibling alerts linked`);
+      showToast(`AlertBot · ${p.title}`, `${p.tenant} — New Relic dashboard & 3 sibling alerts linked`);
     });
   }
 
@@ -822,11 +824,11 @@
     const st = state.testplan;
     const pt = lang === "pt";
     const rows = [
-      { id: "UAT-01", en: "Filter work orders by scheduled date window", pt: "Filtrar ordens por janela de agendamento" },
-      { id: "UAT-02", en: "Recalculate capacity bar after drag-and-drop", pt: "Recalcular barra de capacidade após arrastar" },
-      { id: "UAT-03", en: "Validate mandatory signature on offline close", pt: "Validar assinatura obrigatória no fechamento offline" },
-      { id: "UAT-04", en: "Export bilingual PDF summary with header totals", pt: "Exportar resumo PDF bilíngue com totais" },
-      { id: "UAT-05", en: "Verify dynamic rule trigger on priority escalation", pt: "Verificar regra dinâmica na escalação de prioridade" }
+      { id: "UAT-01", en: "Register with an existing email address", pt: "Cadastrar usuário com um e-mail já existente" },
+      { id: "UAT-02", en: "Upload a file exceeding the 10 MB size limit", pt: "Enviar um arquivo acima do limite de 10 MB" },
+      { id: "UAT-03", en: "Reset password using an expired verification token", pt: "Redefinir senha com token de verificação expirado" },
+      { id: "UAT-04", en: "Filter invoice history by custom date range", pt: "Filtrar histórico de faturas por período personalizado" },
+      { id: "UAT-05", en: "Export monthly account summary as CSV", pt: "Exportar resumo mensal da conta em formato CSV" }
     ];
     const total = st.statuses.length;
     const passed = st.statuses.filter((s) => s === "Pass").length;
@@ -872,16 +874,16 @@
     const pt = lang === "pt";
     const presets = [
       {
-        label: "PT · Resumo de ticket",
-        raw: "cliente relatou erro ao sincronizar anexo no celular depois da atualizacao",
-        greeting: "Olá! Obrigado por entrar em contato conosco.\n\nRecebemos seu relato sobre a falha ao sincronizar anexos após a atualização recente no aplicativo móvel e já iniciamos a análise do caso.\n\nAssim que validarmos os logs de envio, retorno com os próximos passos.",
-        polish: "O cliente relatou uma falha na sincronização de anexos no dispositivo móvel logo após a atualização do aplicativo."
+        label: "PT · Mensagem do usuário",
+        raw: "Estou enfrentando um problema na sincronização de anexos pelo celular depois da última atualização do aplicativo.",
+        greeting: "Olá! Obrigado por entrar em contato conosco.\n\nRecebi seu relato sobre o problema na sincronização de anexos pelo celular após a última atualização e já comecei a analisar o ocorrido.\n\nAssim que validar os logs de envio, retorno com as orientações para resolver.",
+        polish: "Olá, estou enfrentando uma falha na sincronização de anexos pelo aplicativo móvel desde a última atualização."
       },
       {
-        label: "EN · Ticket summary",
-        raw: "user cant export pdf report from web console getting timeout after 30s",
-        greeting: "Hello, thank you for reaching out to support.\n\nI have reviewed your report regarding the 30-second timeout when exporting PDF reports from the web console and I am checking the server logs now.\n\nI will follow up with an update shortly.",
-        polish: "The user is unable to export PDF reports from the web console due to a 30-second request timeout."
+        label: "EN · User ticket message",
+        raw: "I'm having an issue with attachment synchronization on mobile after the latest update, and my pending photos won't upload.",
+        greeting: "Hello, thank you for reaching out to support.\n\nI have reviewed your report about the attachment synchronization issue on mobile after the latest update and I am checking the upload logs now.\n\nI will follow up with an update shortly.",
+        polish: "I am experiencing an attachment synchronization issue in the mobile app following the latest update, preventing pending photos from uploading."
       }
     ];
     const p = presets[st.presetIdx];
@@ -1006,9 +1008,9 @@
 
   const RENDERERS = {
     "flylow": (mount, lang) => renderFlyLow(mount, lang, false),
-    "radar-monitor": renderRadarMonitor,
+    "radar-monitor": (mount, lang) => renderRadarMonitor(mount, lang, false),
     "lebet": renderLeBet,
-    "aircatch": renderAirCatch,
+    "rotafacil": (mount, lang) => renderRotaFacil(mount, lang, false),
     "jiramonitor": renderJiraMonitor,
     "blocklymaster": renderBlocklyMaster,
     "chatjira": renderChatJira,
@@ -1020,9 +1022,16 @@
     "hittheclock": renderHitTheClock
   };
 
+  const HERO_COMPACT_RENDERERS = {
+    "flylow": (mount, lang) => renderFlyLow(mount, lang, true),
+    "radar-monitor": (mount, lang) => renderRadarMonitor(mount, lang, true),
+    "rotafacil": (mount, lang) => renderRotaFacil(mount, lang, true)
+  };
+
   window.PORTFOLIO_DEMOS = {
-    renderHeroPreview(mount, lang) {
-      renderFlyLow(mount, lang, true);
+    renderHeroPreview(mount, lang, heroId) {
+      const fn = HERO_COMPACT_RENDERERS[heroId] || HERO_COMPACT_RENDERERS.flylow;
+      fn(mount, lang);
     },
     renderProjectDemo(id, mount, lang) {
       const fn = RENDERERS[id];

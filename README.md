@@ -1,6 +1,6 @@
-# davidknndy.github.io
+David Kennedy's Portfolio
 
-Personal engineering portfolio and interactive project workbench for **David Kennedy** (`davidknndy`), showcasing 13 mobile, web, automation, and support-engineering tools.
+My personal engineering portfolio and interactive project workbench for (`davidknndy`), showcasing 13 mobile, web, automation, and support-engineering tools.
 
 ## Structure
 
