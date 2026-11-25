@@ -2,6 +2,8 @@
 
 My personal engineering portfolio and interactive project showcase, featuring 13 mobile, desktop automation, and support engineering tools I built using Python, Node.js, Flutter, and Kotlin.
 
+You can access here: davidknndy.github.io
+
 ## What is inside
 
 - **Interactive Workbench** — Architecture notes and live client-side simulators for each project (`FlyLow`, `Radar Monitor`, `LeBet`, `Rota Fácil`, `Greeter`, `HitTheClock`, `JiraMonitor`, `BlocklyMaster`, `ChatJira`, `CSAT`, `BOT KB + GPT`, `AlertBot`, and `TestPlan`).
