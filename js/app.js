@@ -141,10 +141,11 @@
 
   function renderArchive() {
     els.archiveTableBody.innerHTML = projects
-      .map((p) => {
+      .map((p, idx) => {
         const copy = p[state.lang];
+        const delay = Math.min(idx * 35, 360);
         return `
-          <tr>
+          <tr style="--row-delay:${delay}ms">
             <td class="col-idx"><span class="mono-index">${p.index}</span></td>
             <td>
               <span class="archive-name">${p.name}</span>
@@ -328,7 +329,12 @@
   function initScrollChrome() {
     const topbar = document.getElementById("top");
     const bar = document.getElementById("scrollProgress");
+    const heroPreview = document.querySelector(".hero-preview");
+    const navLinks = Array.from(document.querySelectorAll(".nav-link"));
+    const sections = ["workbench", "archive", "about"].map((id) => document.getElementById(id)).filter(Boolean);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!topbar || !bar) return;
+
     let ticking = false;
     const update = () => {
       ticking = false;
@@ -337,7 +343,22 @@
       const ratio = Math.min(1, Math.max(0, y / max));
       bar.style.transform = `scaleX(${ratio.toFixed(4)})`;
       topbar.classList.toggle("scrolled", y > 12);
+
+      if (heroPreview && !reduced) {
+        const shift = Math.min(20, y * 0.04);
+        heroPreview.style.transform = y < 700 ? `translateY(${shift.toFixed(1)}px)` : "";
+      }
+
+      const probe = y + 140;
+      let activeSec = "";
+      sections.forEach((sec) => {
+        if (probe >= sec.offsetTop) activeSec = sec.id;
+      });
+      navLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${activeSec}`);
+      });
     };
+
     window.addEventListener("scroll", () => {
       if (!ticking) {
         ticking = true;
@@ -345,6 +366,15 @@
       }
     }, { passive: true });
     update();
+
+    const previewWin = document.querySelector(".preview-window");
+    if (previewWin && !reduced) {
+      previewWin.addEventListener("pointermove", (e) => {
+        const rect = previewWin.getBoundingClientRect();
+        previewWin.style.setProperty("--mx", `${Math.round(e.clientX - rect.left)}px`);
+        previewWin.style.setProperty("--my", `${Math.round(e.clientY - rect.top)}px`);
+      });
+    }
   }
 
   function bootstrap() {
