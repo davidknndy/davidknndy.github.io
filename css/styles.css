@@ -959,6 +959,7 @@ html[data-theme="light"] .theme-icon-sun {
   gap: 2px;
   max-height: 320px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 @media (min-width: 960px) {
@@ -1009,7 +1010,6 @@ html[data-theme="light"] .theme-icon-sun {
 
 .project-row:hover {
   background: var(--bg-raised);
-  transform: translateX(2px);
 }
 
 .project-row.active {
