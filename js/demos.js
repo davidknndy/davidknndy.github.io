@@ -1040,7 +1040,7 @@
   const HERO_COMPACT_RENDERERS = {
     "flylow": (mount, lang) => renderFlyLow(mount, lang, true),
     "radar-monitor": (mount, lang) => renderRadarMonitor(mount, lang, true),
-    "rotafacil": (mount, lang) => renderRotaFacil(mount, lang, true)
+    "lebet": (mount, lang) => renderLeBet(mount, lang)
   };
 
   window.PORTFOLIO_DEMOS = {
