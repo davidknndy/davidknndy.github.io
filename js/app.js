@@ -173,10 +173,15 @@
     });
   }
 
-  function renderHeroPreview() {
+  function renderHeroPreview(animate) {
     document.querySelectorAll("[data-hero-tab]").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.heroTab === state.heroId);
     });
+    if (animate) {
+      els.heroPreviewMount.classList.remove("preview-enter");
+      void els.heroPreviewMount.offsetWidth;
+      els.heroPreviewMount.classList.add("preview-enter");
+    }
     demos.renderHeroPreview(els.heroPreviewMount, state.lang, state.heroId);
   }
 
@@ -262,7 +267,7 @@
     document.querySelectorAll("[data-hero-tab]").forEach((btn) => {
       btn.addEventListener("click", () => {
         state.heroId = btn.dataset.heroTab;
-        renderHeroPreview();
+        renderHeroPreview(true);
       });
     });
 
@@ -320,6 +325,28 @@
     });
   }
 
+  function initScrollChrome() {
+    const topbar = document.getElementById("top");
+    const bar = document.getElementById("scrollProgress");
+    if (!topbar || !bar) return;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY || 0;
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const ratio = Math.min(1, Math.max(0, y / max));
+      bar.style.transform = `scaleX(${ratio.toFixed(4)})`;
+      topbar.classList.toggle("scrolled", y > 12);
+    };
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }, { passive: true });
+    update();
+  }
+
   function bootstrap() {
     applyTheme();
     const hashMatch = window.location.hash.match(/project=([a-z0-9-]+)/i);
@@ -330,10 +357,11 @@
     renderSidebar();
     renderStage();
     renderArchive();
-    renderHeroPreview();
+    renderHeroPreview(false);
     initEvents();
     initRevealObserver();
     animateHeroCounters();
+    initScrollChrome();
   }
 
   bootstrap();

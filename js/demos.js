@@ -211,6 +211,9 @@
     const overspeed = st.speed > cam.limit;
     const alertActive = st.distance <= 350;
     const proxPct = Math.max(5, Math.min(100, Math.round(((600 - st.distance) / 560) * 100)));
+    const circ = 2 * Math.PI * 62;
+    const speedRatio = Math.max(0.05, Math.min(1, st.speed / 120));
+    const dashOffset = (circ * (1 - speedRatio)).toFixed(1);
     const ttsLine = overspeed
       ? `Atenção. Radar de ${cam.limit} quilômetros por hora a ${st.distance} metros na ${cam.street}. Reduza a velocidade.`
       : `Radar de ${cam.limit} quilômetros por hora a ${st.distance} metros na ${cam.street}.`;
@@ -246,9 +249,15 @@
             </span>
             <div class="speed-sign">${cam.limit}</div>
           </div>
-          <div style="text-align:center">
-            <div class="hud-speed-readout ${overspeed ? "overspeed" : ""}">${st.speed}</div>
-            <div class="mono-meta">km/h</div>
+          <div class="hud-gauge-wrap">
+            <svg class="hud-gauge-svg" viewBox="0 0 148 148" aria-hidden="true">
+              <circle class="hud-gauge-track" cx="74" cy="74" r="62"/>
+              <circle class="hud-gauge-arc ${overspeed ? "overspeed" : ""}" cx="74" cy="74" r="62" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${dashOffset}"/>
+            </svg>
+            <div class="hud-speed-center">
+              <div class="hud-speed-readout ${overspeed ? "overspeed" : ""}">${st.speed}</div>
+              <div class="mono-meta">km/h</div>
+            </div>
           </div>
           <div class="stack-sm" style="width:100%">
             <div class="proximity-meter">
@@ -418,6 +427,12 @@
               <span class="mono-tag">${esc(ride.distance)}</span>
             </div>
             <div class="route-stops">
+              <svg class="route-svg-line" viewBox="0 0 220 24" aria-hidden="true">
+                <path class="route-svg-path" d="M 8 12 Q 70 2, 110 12 T 212 12"/>
+                <circle cx="8" cy="12" r="3" fill="var(--text-muted)"/>
+                <circle cx="110" cy="12" r="4" fill="var(--positive)"/>
+                <circle cx="212" cy="12" r="4" fill="var(--accent)"/>
+              </svg>
               <div class="route-stop">
                 <span class="route-node pickup"></span>
                 <div>
